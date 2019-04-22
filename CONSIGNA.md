@@ -119,21 +119,25 @@ que no son óptimas si estuviéramos implementando un producto real:
    username, una dirección, una contraseña, un nombre del negocio y una
    distancia máxima de delivery. El username define univocamente tanto a los
    consumidores como a los proveedores, y no pueden existir consumidores y
-   proveedores con el mismo username.
-2. A partir de una dirección obtener un listado de proveedores que hagan
+   proveedores con el mismo username. De igual manera, el nombre de la tienda
+   de un proveedor debe ser unívoco entre proveedores.
+2. Los consumidores y proveedores comenzarán con un balance de 0 que sólo será
+   modificado cuando se complete un pedido. El total del pedido será restado al
+   saldo del consumidor (quien manejará saldo negativo) y sumado al del
+   proveedor.
+3. A partir de una dirección obtener un listado de proveedores que hagan
    delivery hasta esa dirección particular.
-3. Crear un pedido (order) a un único proveedor. Este pedido puede contener
+4. Crear un pedido (order) a un único proveedor. Este pedido puede contener
    múltiples items. Cuando la orden es creada, se debe actualizar el saldo del
    consumidor, proveedor y el estado del pedido.
-4. Consultar el listado de pedidos realizados por un consumidor en particular.
-5. Crear y modificar un menú compuesto de ítems. Cada ítem debe tener una
+5. Consultar el listado de pedidos realizados por un consumidor en particular.
+6. Crear y modificar un menú compuesto de ítems. Cada ítem debe tener una
    descripción y un precio.
-6. Consultar el listado de pedidos recibidos por un proveedor y sus respectivos
+7. Consultar el listado de pedidos recibidos por un proveedor y sus respectivos
    estados.
-7. Marcar un pedido como entregado. [Esta acción cambia el estado del pedido a
+8. Marcar un pedido como entregado. [Esta acción cambia el estado del pedido a
    ‘delivered’].
-8. Consultar la información de un usuario: username, dirección, balance, etc.
-
+9. Consultar la información de un usuario: username, dirección, balance, etc.
 
 ## Implementación
 
@@ -155,16 +159,16 @@ Para esto se les da una lista de métodos que tendrán que implementar ustedes.
 | GET    | /api/locations               |                                                                                             | 200 - [{name: string, coordX: int, coordY: int}]                                                                                                                                                                                   |
 | POST   | /api/locations               | {name: string, coordX: int, coordY: int }                                                   | 200 - id ; 409 - existing location name                                                                                                                                                                                            |
 | GET    | /api/consumers               |                                                                                             | 200 - [{id: int, username: string, locationId: int}]                                                                                                                                                                               |
-| POST   | /api/consumers               | {username: string, location: string}                                                        | 200 - id ; 409 - existing username                                                                                                                                                                                                 |
+| POST   | /api/consumers               | {username: string, locationName: string}                                                    | 200 - id ; 404 - non existing location ; 409 - existing username                                                                                                                                                                   |
 | GET    | /api/providers               | {locationName?: string}                                                                     | 200 - [{id: int, username: string, locationId: int, storeName: string, maxDeliveryDistance: int}] ; 404 - non existing location                                                                                                    |
-| POST   | /api/providers               | {username: string, storeName: string, location: string, maxDeliveryDistance: int}           | 200 - id ; 409 - existing username                                                                                                                                                                                                 |
+| POST   | /api/providers               | {username: string, storeName: string, locationName: string, maxDeliveryDistance: int}       | 200 - id ; 400 - negative maxDeliveryDistance ; 404 - non existing location ; 409 - existing username/storeName                                                                                                                    |
 | POST   | /api/users/delete/{id:int}   |                                                                                             | 200 "Ok" ; 404 - non existing user                                                                                                                                                                                                 |
 | GET    | /api/items                   | {providerUsername?: string}                                                                 | 200 - [{id: int, name: string, price: float, description: string, providerId: int}*] ; 404 - non existing provider                                                                                                                 |
-| POST   | /api/items                   | {name: string, description: string, price: float, providerUsername: string}                 | 200 - id ; 404 - non existing provider ; 409 - existing item for provider                                                                                                                                                          |
+| POST   | /api/items                   | {name: string, description: string, price: float, providerUsername: string}                 | 200 - id ; 400 - negative price ; 404 - non existing provider ; 409 - existing item for provider                                                                                                                                   |
 | POST   | /api/items/delete/{id:int}   |                                                                                             | 200 "Ok" ; 404 - non existing item                                                                                                                                                                                                 |
 | GET    | /api/orders                  | {username: string}                                                                          | 200 - [{id: int, consumerId: int, consumerUsername: string, consumerLocation: string, providerId: int, providerStoreName: string, orderTotal: float, status: option(‘payed’, ‘delivered’, ‘finished’)}*] ; 404 - non existing user |
 | GET    | /api/orders/detail/{id:int}  |                                                                                             | 200 - [{id: int, name: string, description: string, price: float, amount: int}] ; 404 - non existing order                                                                                                                         |
-| POST   | /api/orders                  | {providerUsername: string, consumerUsername: string, items: [{name: string, amount: int}+]} | 200 - id ; 404 - non existing consumer/provider/item for provider                                                                                                                                                                  |
+| POST   | /api/orders                  | {providerUsername: string, consumerUsername: string, items: [{name: string, amount: int}+]} | 200 - id ; 400 - negative amount ; 404 - non existing consumer/provider/item for provider                                                                                                                                          |
 | POST   | /api/orders/delete/{id:int}  |                                                                                             | 200 - "Ok" ; 404 - non existing order                                                                                                                                                                                              |
 | POST   | /api/orders/deliver/{id:int} |                                                                                             | 200 - "Ok" ; 404 - non existing order                                                                                                                                                                                              |
 | POST   | /api/login**                 | {username: string, password: string}                                                        | 200 - {id: int, isProvider: bool} ; 401 - non existing user ; 403 - incorrect password                                                                                                                                             |
