@@ -5,7 +5,7 @@ trait ModelCompanion[M <: Model[M]] {
 
   private[models] def apply(jsonValue: JValue): M
 
-  def all: List[M] = ???
+  def all: List[M] = dbTable.instances.values.toList
 
   def find(id: Int): Option[M] = ???
 

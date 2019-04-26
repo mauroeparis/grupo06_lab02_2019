@@ -17,7 +17,7 @@ object Location extends ModelCompanion[Location] {
 class Location(val name: String, val coordX: Int, val coordY: Int) extends Model[Location] {
   protected def dbTable: DatabaseTable[Location] = Location.dbTable
 
-  override def toMap: Map[String, Any] = ???
+  override def toMap: Map[String, Any] = super.toMap + ("name" -> name, "coordX" -> coordX, "coordY" -> coordY)
 
   override def toString: String = s"Location: $name"
 }
