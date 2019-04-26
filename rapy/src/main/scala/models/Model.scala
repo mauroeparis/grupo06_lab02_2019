@@ -7,13 +7,21 @@ trait ModelCompanion[M <: Model[M]] {
 
   def all: List[M] = dbTable.instances.values.toList
 
-  def find(id: Int): Option[M] = ???
+  def find(id: Int): Option[M] = {
+    val objList = dbTable.instances.values.toList
+    objList.filter(_.get(id))
+  }
 
-  def exists(attr: String, value: Any): Boolean = ???
+  // def exists(attr: String, value: Any): Boolean = ???
 
-  def delete(id: Int): Unit = { ??? }
+  // def delete(id: Int): Unit = { ??? }
 
-  def filter(mapOfAttributes: Map[String, Any]): List[M] = ???
+  def filter(mapOfAttributes: Map[String, Any]): List[M] = {
+    val objList = dbTable.instances.values.toList
+    mapOfAttributes.foreach { case (key, value) =>
+      objList.filter(_.get(key) == value)
+    }
+  }
 }
 
 trait Model[M <: Model[M]] { self: M =>
