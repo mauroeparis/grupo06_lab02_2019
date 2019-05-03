@@ -21,4 +21,3 @@ class DatabaseTable[M <: Model[M]](val filename: String) {
     Database.saveDatabaseTable(this)
   }
 }
-

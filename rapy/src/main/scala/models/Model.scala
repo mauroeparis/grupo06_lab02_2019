@@ -17,11 +17,11 @@ trait ModelCompanion[M <: Model[M]] {
   }
 
   def exists(attr: String, value: Any): Boolean = {
-    if (!filter(Map(attr -> value)).isEmpty) {
-      return true
-    } else {
-      return false
-    }
+    val objList = dbTable.instances.values.toList
+    objList.exists(
+      _.toMap.get(attr) == value
+    )
+    !filter(Map(attr -> value)).isEmpty
   }
 
   def delete(id: Int): Unit = {
