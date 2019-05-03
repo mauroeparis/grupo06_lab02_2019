@@ -19,9 +19,9 @@ object RestfulAPIServer extends MainRoutes  {
 
   @postJson("/api/locations")
   def locations(name: String, coordX: Int, coordY: Int): Response = {
-    // if (Location.exists("name", name)) {
-    //   return JSONResponse("Existing location", 409)
-    // }
+    if (Location.exists("name", name)) {
+      return JSONResponse("Existing location", 409)
+    }
 
     val location = Location(name, coordX, coordY)
     location.save()

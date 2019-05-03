@@ -9,18 +9,30 @@ trait ModelCompanion[M <: Model[M]] {
 
   def find(id: Int): Option[M] = {
     val objList = dbTable.instances.values.toList
-    objList.filter(_.get(id))
+    if (exists("id", id)) {
+      Some (objList.filter(_.id == id).head)
+    } else {
+      None
+    }
   }
 
-  // def exists(attr: String, value: Any): Boolean = ???
+  def exists(attr: String, value: Any): Boolean = {
+    if (!filter(Map(attr -> value)).isEmpty) {
+      return true
+    } else {
+      return false
+    }
+  }
 
-  // def delete(id: Int): Unit = { ??? }
+  def delete(id: Int): Unit = {
+    dbTable.delete(id)
+  }
 
   def filter(mapOfAttributes: Map[String, Any]): List[M] = {
     val objList = dbTable.instances.values.toList
-    mapOfAttributes.foreach { case (key, value) =>
-      objList.filter(_.get(key) == value)
-    }
+    objList.filter(
+      mapOfAttributes.toSet subsetOf _.toMap.toSet
+    )
   }
 }
 
