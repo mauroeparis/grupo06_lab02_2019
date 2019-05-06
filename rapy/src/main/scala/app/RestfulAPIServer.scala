@@ -37,7 +37,7 @@ object RestfulAPIServer extends MainRoutes  {
   def consumers(username: String, locationName: String): Response = {
     if (Consumer.exists("username", username)) {
       return JSONResponse("Existing consumer", 409)
-    } else if (!Location.exists("locationName", locationName)) {
+    } else if (!Location.exists("name", locationName)) {
       return JSONResponse("Nonexisting location", 404)
     }
 
