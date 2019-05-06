@@ -3,7 +3,7 @@ package models
 object Location extends ModelCompanion[Location] {
   protected def dbTable: DatabaseTable[Location] = Database.locations
 
-   def apply(name: String, coordX: Int, coordY: Int): Location =
+   def apply(name: String, coordX: Double, coordY: Double): Location =
      new Location(name, coordX, coordY)
 
    private[models] def apply(jsonValue: JValue): Location = {
@@ -14,7 +14,7 @@ object Location extends ModelCompanion[Location] {
    }
  }
 
-class Location(val name: String, val coordX: Int, val coordY: Int) extends Model[Location] {
+class Location(val name: String, val coordX: Double, val coordY: Double) extends Model[Location] {
   protected def dbTable: DatabaseTable[Location] = Location.dbTable
 
   override def toMap: Map[String, Any] = super.toMap + ("name" -> name, "coordX" -> coordX, "coordY" -> coordY)
