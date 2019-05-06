@@ -46,6 +46,11 @@ object RestfulAPIServer extends MainRoutes  {
     JSONResponse(consumer.id)
   }
 
+  @get("/api/providers")
+  def providers(locationName: String): Response = {
+    JSONResponse(Provider.all.map(provider => provider.toMap))
+  }
+
   override def main(args: Array[String]): Unit = {
     System.err.println("\n " + "=" * 39)
     System.err.println(s"| Server running at http://$host:$port ")
