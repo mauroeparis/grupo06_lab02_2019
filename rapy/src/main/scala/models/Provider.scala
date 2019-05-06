@@ -3,8 +3,9 @@ package models
 object Provider extends ModelCompanion[Provider] {
   protected def dbTable: DatabaseTable[Provider] = Database.providers
 
-   def apply(username: String, locationName: String): Provider =
-     new Provider(username, locationName)
+   def apply(username: String, storeName: String, locationName: String,
+             maxDeliveryDistance: Int): Provider =
+     new Provider(username, storeName, locationName, maxDeliveryDistance)
 
    private[models] def apply(jsonValue: JValue): Provider = {
      val value = jsonValue.extract[Provider]
@@ -14,11 +15,15 @@ object Provider extends ModelCompanion[Provider] {
    }
  }
 
-class Provider(val username: String, val locationName: String) extends Model[Provider] {
+class Provider(val username: String, val storeName: String,
+               val locationName: String,
+               val maxDeliveryDistance: Int) extends Model[Provider] {
   protected def dbTable: DatabaseTable[Provider] = Provider.dbTable
 
   override def toMap: Map[String, Any] = super.toMap + (
-    "username" -> username, "locationName" -> locationName
+    "username" -> username, "storeName" -> storeName,
+    "locationName" -> locationName,
+    "maxDeliveryDistance" -> maxDeliveryDistance
   )
 
   override def toString: String = s"Provider: $username"

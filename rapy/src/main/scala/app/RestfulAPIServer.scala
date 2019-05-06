@@ -51,6 +51,24 @@ object RestfulAPIServer extends MainRoutes  {
     JSONResponse(Provider.all.map(provider => provider.toMap))
   }
 
+  @postJson("/api/providers")
+  def providers(username: String, storeName: String, locationName: String,
+                maxDeliveryDistance: Int): Response = {
+    if (Provider.exists("username", username)) {
+      return JSONResponse("Existing username", 409)
+    } else if (maxDeliveryDistance < 0) {
+      return JSONResponse("negative maxDeliveryDistance", 400)
+    } else if (Provider.exists("storeName", storeName)) {
+      return JSONResponse("Existing storeName", 409)
+    } else if (!Location.exists("name", locationName)) {
+      return JSONResponse("Nonexisting location", 404)
+    }
+
+    val provider = Provider(username, storeName, locationName, maxDeliveryDistance)
+    provider.save()
+    JSONResponse(provider.id)
+  }
+
   override def main(args: Array[String]): Unit = {
     System.err.println("\n " + "=" * 39)
     System.err.println(s"| Server running at http://$host:$port ")
