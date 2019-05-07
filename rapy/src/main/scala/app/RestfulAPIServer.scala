@@ -46,10 +46,11 @@ object RestfulAPIServer extends MainRoutes  {
     JSONResponse(consumer.id)
   }
 
-  // TODO: AGREGAR FILTRO DE PROVIDERS CON locationName
   @get("/api/providers")
   def providers(locationName: String): Response = {
-    JSONResponse(Provider.all.map(provider => provider.toMap))
+    JSONResponse(
+      Provider.filter(Map("locationName" -> locationName))
+    )
   }
 
   @postJson("/api/providers")
