@@ -46,6 +46,7 @@ object RestfulAPIServer extends MainRoutes  {
     JSONResponse(consumer.id)
   }
 
+  // TODO: AGREGAR FILTRO DE PROVIDERS CON locationName
   @get("/api/providers")
   def providers(locationName: String): Response = {
     JSONResponse(Provider.all.map(provider => provider.toMap))
@@ -67,6 +68,28 @@ object RestfulAPIServer extends MainRoutes  {
     val provider = Provider(username, storeName, locationName, maxDeliveryDistance)
     provider.save()
     JSONResponse(provider.id)
+  }
+
+  // TODO: FALTA FILTRAR POR providerUsername
+  @get("/api/items")
+  def items(providerUsername: String): Response = {
+    JSONResponse(Item.all.map(item => item.toMap))
+  }
+
+  // TODO: FALTA VER CASOS DE FUNCION
+  @postJson("/api/items")
+  def items(name: String, description: String, price: Float,
+            providerUsername: String): Response = {
+      if (price < 0) {
+        return JSONResponse("negative price", 400)
+        // TODO: revisar linea de abajo, esta bien la sintaxis?
+      } else if (!Provider.exists("providerUsername", providerUsername)) {
+        return JSONResponse("non existing provider", 404)
+      }
+
+    val item = Item(name, description, price, providerUsername)
+    item.save()
+    JSONResponse(item.id)
   }
 
   override def main(args: Array[String]): Unit = {
