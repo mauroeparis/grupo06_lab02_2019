@@ -74,7 +74,9 @@ object RestfulAPIServer extends MainRoutes  {
   // TODO: FALTA FILTRAR POR providerUsername
   @get("/api/items")
   def items(providerUsername: String): Response = {
-    JSONResponse(Item.all.map(item => item.toMap))
+    JSONResponse(
+      Provider.filter(Map("providerUsername" -> providerUsername))
+    )
   }
 
   // TODO: FALTA VER CASOS DE FUNCION
