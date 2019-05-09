@@ -74,7 +74,8 @@ object RestfulAPIServer extends MainRoutes  {
       return JSONResponse("Non existing location", 404)
     }
 
-    val provider = Provider(username, storeName, locationName, maxDeliveryDistance)
+    val provider = Provider(username, storeName, locationName,
+                            maxDeliveryDistance)
     provider.save()
     JSONResponse(provider.id)
   }
@@ -120,8 +121,10 @@ object RestfulAPIServer extends MainRoutes  {
   @postJson("/api/orders")
   def orders(providerUsername: String,
             consumerUsername: String, items: List[OrderItem]): Response = {
-    if (!Provider.exists("username", providerUsername) || !Consumer.exists("username", consumerUsername)) {
-      return JSONResponse("non existing consumer/provider/item for provider", 404)
+    if (!Provider.exists("username", providerUsername) ||
+        !Consumer.exists("username", consumerUsername)) {
+      return JSONResponse(
+        "non existing consumer/provider/item for provider", 404)
     } else if (!items.filter(_.amount<0).isEmpty) {
       return JSONResponse("negative amount", 400)
     }
@@ -135,11 +138,13 @@ object RestfulAPIServer extends MainRoutes  {
   def orders(username: String): Response = {
     if (Provider.exists("username", username)) {
       JSONResponse(
-        Order.filter(Map("providerUsername" -> username)).map(order => order.toMap)
+        Order.filter(Map("providerUsername" -> username)).map(order =>
+                                                              order.toMap)
       )
     } else if (Consumer.exists("username", username)) {
       JSONResponse(
-        Order.filter(Map("consumerUsername" -> username)).map(order => order.toMap)
+        Order.filter(Map("consumerUsername" -> username)).map(order =>
+                                                              order.toMap)
       )
     } else {
       JSONResponse(
@@ -174,8 +179,13 @@ object RestfulAPIServer extends MainRoutes  {
       case Some(order) => JSONResponse(
         order.items.flatMap(
           orderItem => Item.filter(
-            Map("name" -> orderItem.name, "providerUsername" -> order.providerUsername)
-          ).map(item => item.toMap + ("amount" -> orderItem.amount))
+            Map(
+              "name" -> orderItem.name,
+              "providerUsername" -> order.providerUsername
+            )
+          ).map(
+            item => item.toMap + ("amount" -> orderItem.amount)
+          )
         )
       )
     }
