@@ -52,7 +52,7 @@ object RestfulAPIServer extends MainRoutes  {
       Provider.all.map(provider => provider.toMap)
     )
     case locationName =>
-      if (!Location.exists("locationName", locationName)) {
+      if (!Location.exists("name", locationName)) {
         JSONResponse("Non existing location", 404)
       } else {
         JSONResponse(
@@ -111,11 +111,12 @@ object RestfulAPIServer extends MainRoutes  {
   @post("/api/items/delete/:id")
   def itemsDelete(id: Int): Response = {
     if (Item.exists("id", id)) {
-      // TODO: FIJARSE SI ESTO ESTA BIEN
       Item.delete(id)
       return JSONResponse("Ok", 200)
     } else {
       return JSONResponse("non existing item", 404)
+    }
+}
 
   @postJson("/api/orders")
   def orders(providerUsername: String,
