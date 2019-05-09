@@ -13,16 +13,18 @@ import models._
 
 object Database {
   var baseDir: String = "db"
-  private[models] val locations = new DatabaseTable[Location]("locations.json")
   private[models] val consumers = new DatabaseTable[Consumer]("consumers.json")
-  private[models] val providers = new DatabaseTable[Provider]("providers.json")
   private[models] val items = new DatabaseTable[Item]("items.json")
+  private[models] val locations = new DatabaseTable[Location]("locations.json")
+  private[models] val orders = new DatabaseTable[Order]("orders.json")
+  private[models] val providers = new DatabaseTable[Provider]("providers.json")
 
   private val databases = List(
-    (locations, Location),
     (consumers, Consumer),
-    (providers, Provider),
     (items, Item),
+    (locations, Location),
+    (orders, Order),
+    (providers, Provider),
   )
 
   private def loadDatabaseTable(file: String): Try[List[JValue]] = Try {
