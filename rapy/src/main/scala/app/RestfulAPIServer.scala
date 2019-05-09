@@ -116,7 +116,11 @@ object RestfulAPIServer extends MainRoutes  {
     } else {
       return JSONResponse("non existing item", 404)
     }
+<<<<<<< Updated upstream
 }
+=======
+  }
+>>>>>>> Stashed changes
 
   @postJson("/api/orders")
   def orders(providerUsername: String,
@@ -146,6 +150,25 @@ object RestfulAPIServer extends MainRoutes  {
       JSONResponse(
         "non existing user", 404
       )
+    }
+  }
+
+  @post("/api/orders/delete/:id")
+  def ordersDelete(id: Int): Response = {
+    if (Order.exists("id", id)) {
+      Order.delete(id)
+      return JSONResponse("Ok", 200)
+    } else {
+      return JSONResponse("Non existing order", 404)
+    }
+  }
+
+  @post("/api/orders/deliver/:id")
+  def ordersDeliver(id: Int): Response = {
+    Order.find(id) match {
+      case None => return JSONResponse("Non existing order", 404)
+      case Some(order) => order.status = "Deliver"
+      return JSONResponse("Ok", 200)
     }
   }
 

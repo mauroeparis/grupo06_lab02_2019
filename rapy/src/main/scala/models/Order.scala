@@ -15,10 +15,12 @@ object Order extends ModelCompanion[Order] {
 
    def apply(providerUsername: String,
             consumerUsername: String,
-            items: List[OrderItem]): Order = new Order(
+            items: List[OrderItem],
+            status: String = "Payed"): Order = new Order(
                 providerUsername,
                 consumerUsername,
-                items
+                items,
+                status
             )
 
    private[models] def apply(jsonValue: JValue): Order = {
@@ -32,7 +34,7 @@ object Order extends ModelCompanion[Order] {
 class Order(val providerUsername: String,
             val consumerUsername: String,
             val items: List[OrderItem],
-            status: String = "Payed") extends Model[Order] {
+            var status: String = "Payed") extends Model[Order] {
 
   protected def dbTable: DatabaseTable[Order] = Order.dbTable
 
@@ -40,6 +42,7 @@ class Order(val providerUsername: String,
     "providerUsername" -> providerUsername,
     "consumerUsername" -> consumerUsername,
     "items" -> items,
+    "status" -> status,
   )
 
   override def toString: String = s"Order #$id from $consumerUsername to $providerUsername"
