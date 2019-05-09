@@ -1,4 +1,12 @@
 package models
+import upickle.default.{ReadWriter => RW, macroRW}
+
+
+case class OrderItem (name: String, amount: Int)
+object OrderItem{
+  implicit val rw: RW[OrderItem] = macroRW
+}
+
 
 object Order extends ModelCompanion[Order] {
   protected def dbTable: DatabaseTable[Order] = Database.orders
@@ -7,7 +15,7 @@ object Order extends ModelCompanion[Order] {
 
    def apply(providerUsername: String,
             consumerUsername: String,
-            items: List[Map[String, Int]]): Order = new Order(
+            items: List[OrderItem]): Order = new Order(
                 providerUsername,
                 consumerUsername,
                 items
@@ -23,8 +31,8 @@ object Order extends ModelCompanion[Order] {
 
 class Order(val providerUsername: String,
             val consumerUsername: String,
-            val items: List[Map[String, Int]],
-            status: Option[String] = Some("Payed")) extends Model[Order] {
+            val items: List[OrderItem],
+            status: String = "Payed") extends Model[Order] {
 
   protected def dbTable: DatabaseTable[Order] = Order.dbTable
 
