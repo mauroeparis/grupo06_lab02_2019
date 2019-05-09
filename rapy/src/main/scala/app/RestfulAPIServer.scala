@@ -105,6 +105,17 @@ object RestfulAPIServer extends MainRoutes  {
     JSONResponse(item.id)
   }
 
+  @post("/api/items/delete/:id")
+  def itemsDelete(id: Int): Response = {
+    if (Item.exists("id", id)) {
+      // TODO: FIJARSE SI ESTO ESTA BIEN
+      Item.delete(id)
+      return JSONResponse("Ok", 200)
+    } else {
+      return JSONResponse("non existing item", 404)
+    }
+  }
+
   override def main(args: Array[String]): Unit = {
     System.err.println("\n " + "=" * 39)
     System.err.println(s"| Server running at http://$host:$port ")
