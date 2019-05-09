@@ -116,11 +116,7 @@ object RestfulAPIServer extends MainRoutes  {
     } else {
       return JSONResponse("non existing item", 404)
     }
-<<<<<<< Updated upstream
-}
-=======
   }
->>>>>>> Stashed changes
 
   @postJson("/api/orders")
   def orders(providerUsername: String,
