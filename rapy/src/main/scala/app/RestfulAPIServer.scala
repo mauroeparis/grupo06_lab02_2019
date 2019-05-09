@@ -90,7 +90,6 @@ object RestfulAPIServer extends MainRoutes  {
     )
   }
 
-  // TODO: FALTA VER CASOS DE FUNCION
   @postJson("/api/items")
   def items(name: String, description: String, price: Float,
             providerUsername: String): Response = {
@@ -136,11 +135,11 @@ object RestfulAPIServer extends MainRoutes  {
   def orders(username: String): Response = {
     if (Provider.exists("username", username)) {
       JSONResponse(
-        Order.filter(Map("providerUsername" -> username))
+        Order.filter(Map("providerUsername" -> username)).map(order => order.toMap)
       )
     } else if (Consumer.exists("username", username)) {
       JSONResponse(
-        Order.filter(Map("consumerUsername" -> username))
+        Order.filter(Map("consumerUsername" -> username)).map(order => order.toMap)
       )
     } else {
       JSONResponse(
@@ -165,6 +164,20 @@ object RestfulAPIServer extends MainRoutes  {
       case None => JSONResponse("Non existing order", 404)
       case Some(order) => order.status = "Deliver"
         JSONResponse("Ok", 200)
+    }
+  }
+
+  @get("/api/orders/detail/:id")
+  def ordersDetail(id: Int): Response = {
+    Order.find(id) match {
+      case None => JSONResponse("Non existing order", 404)
+      case Some(order) => JSONResponse(
+        order.items.flatMap(
+          orderItem => Item.filter(
+            Map("name" -> orderItem.name, "providerUsername" -> order.providerUsername)
+          ).map(item => item.toMap + ("amount" -> orderItem.amount))
+        )
+      )
     }
   }
 
