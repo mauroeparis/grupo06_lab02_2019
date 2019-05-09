@@ -20,7 +20,9 @@ class Item(val name: String, val description: String, val price: Float,
   protected def dbTable: DatabaseTable[Item] = Item.dbTable
 
   override def toMap: Map[String, Any] = super.toMap + (
-    "name" -> name, "description" -> description, "price" -> price,
+    "name" -> name,
+    "description" -> description,
+    "price" -> price,
     "providerUsername" -> providerUsername
   )
 

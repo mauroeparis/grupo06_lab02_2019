@@ -47,9 +47,14 @@ object RestfulAPIServer extends MainRoutes  {
   }
 
   @get("/api/providers")
-  def providers(locationName: String): Response = {
-    JSONResponse(
-      Provider.filter(Map("locationName" -> locationName))
+  def providers(locationName: String = ""): Response = locationName match {
+    case "" => JSONResponse(
+      Provider.all.map(provider => provider.toMap)
+    )
+    case locationName => JSONResponse(
+      Provider.filter(
+        Map("locationName" -> locationName)
+      )
     )
   }
 
@@ -71,11 +76,13 @@ object RestfulAPIServer extends MainRoutes  {
     JSONResponse(provider.id)
   }
 
-  // TODO: FALTA FILTRAR POR providerUsername
   @get("/api/items")
-  def items(providerUsername: String): Response = {
-    JSONResponse(
-      Provider.filter(Map("providerUsername" -> providerUsername))
+  def items(providerUsername: String = ""): Response = providerUsername match {
+    case "" => JSONResponse(
+        Item.all.map(item => item.toMap)
+    )
+    case providerUsername => JSONResponse(
+      Item.filter(Map("providerUsername" -> providerUsername))
     )
   }
 
@@ -86,7 +93,7 @@ object RestfulAPIServer extends MainRoutes  {
       if (price < 0) {
         return JSONResponse("negative price", 400)
         // TODO: revisar linea de abajo, esta bien la sintaxis?
-      } else if (!Provider.exists("providerUsername", providerUsername)) {
+      } else if (!Provider.exists("username", providerUsername)) {
         return JSONResponse("non existing provider", 404)
       }
 
