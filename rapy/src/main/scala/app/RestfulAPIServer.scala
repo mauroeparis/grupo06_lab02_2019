@@ -38,7 +38,7 @@ object RestfulAPIServer extends MainRoutes  {
     if (Consumer.exists("username", username)) {
       return JSONResponse("Existing consumer", 409)
     } else if (!Location.exists("name", locationName)) {
-      return JSONResponse("Nonexisting location", 404)
+      return JSONResponse("Non existing location", 404)
     }
 
     val consumer = Consumer(username, locationName)
@@ -53,7 +53,7 @@ object RestfulAPIServer extends MainRoutes  {
     )
     case locationName =>
       if (!Location.exists("locationName", locationName)) {
-        return JSONResponse("Nonexisting location", 404)
+        JSONResponse("Non existing location", 404)
       } else {
         JSONResponse(Provider.filter(Map("locationName" -> locationName)))
       }
@@ -65,11 +65,11 @@ object RestfulAPIServer extends MainRoutes  {
     if (Provider.exists("username", username)) {
       return JSONResponse("Existing username", 409)
     } else if (maxDeliveryDistance < 0) {
-      return JSONResponse("negative maxDeliveryDistance", 400)
+      return JSONResponse("Negative maxDeliveryDistance", 400)
     } else if (Provider.exists("storeName", storeName)) {
       return JSONResponse("Existing storeName", 409)
     } else if (!Location.exists("name", locationName)) {
-      return JSONResponse("Nonexisting location", 404)
+      return JSONResponse("Non existing location", 404)
     }
 
     val provider = Provider(username, storeName, locationName, maxDeliveryDistance)
@@ -92,10 +92,12 @@ object RestfulAPIServer extends MainRoutes  {
   def items(name: String, description: String, price: Float,
             providerUsername: String): Response = {
       if (price < 0) {
-        return JSONResponse("negative price", 400)
-        // TODO: revisar linea de abajo, esta bien la sintaxis?
+        return JSONResponse("Negative price", 400)
       } else if (!Provider.exists("username", providerUsername)) {
-        return JSONResponse("non existing provider", 404)
+        return JSONResponse("Non existing provider", 404)
+      } else if (!(Item.filter(Map("name" -> name,
+                 "providerUsername" ->providerUsername))).isEmpty) {
+        return JSONResponse("Existing item for provider", 409)
       }
 
     val item = Item(name, description, price, providerUsername)
