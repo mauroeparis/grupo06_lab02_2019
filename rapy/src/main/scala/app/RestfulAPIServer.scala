@@ -116,6 +116,35 @@ object RestfulAPIServer extends MainRoutes  {
       return JSONResponse("Ok", 200)
     } else {
       return JSONResponse("non existing item", 404)
+
+  @postJson("/api/orders")
+  def orders(providerUsername: String,
+            consumerUsername: String, items: List[OrderItem]): Response = {
+    if (!Provider.exists("username", providerUsername) || !Consumer.exists("username", consumerUsername)) {
+      return JSONResponse("non existing consumer/provider/item for provider", 404)
+    } else if (!items.filter(_.amount<0).isEmpty) {
+      return JSONResponse("negative amount", 400)
+    }
+
+    val order = Order(providerUsername, consumerUsername, items)
+    order.save()
+    JSONResponse(order.id)
+  }
+
+  @get("/api/orders")
+  def orders(username: String): Response = {
+    if (Provider.exists("username", username)) {
+      JSONResponse(
+        Order.filter(Map("providerUsername" -> username))
+      )
+    } else if (Consumer.exists("username", username)) {
+      JSONResponse(
+        Order.filter(Map("consumerUsername" -> username))
+      )
+    } else {
+      JSONResponse(
+        "non existing user", 404
+      )
     }
   }
 
