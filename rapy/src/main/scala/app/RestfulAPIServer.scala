@@ -51,11 +51,12 @@ object RestfulAPIServer extends MainRoutes  {
     case "" => JSONResponse(
       Provider.all.map(provider => provider.toMap)
     )
-    case locationName => JSONResponse(
-      Provider.filter(
-        Map("locationName" -> locationName)
-      )
-    )
+    case locationName =>
+      if (!Location.exists("locationName", locationName)) {
+        return JSONResponse("Nonexisting location", 404)
+      } else {
+        JSONResponse(Provider.filter(Map("locationName" -> locationName)))
+      }
   }
 
   @postJson("/api/providers")
