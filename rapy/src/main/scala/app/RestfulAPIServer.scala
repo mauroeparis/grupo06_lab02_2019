@@ -162,9 +162,9 @@ object RestfulAPIServer extends MainRoutes  {
   @post("/api/orders/deliver/:id")
   def ordersDeliver(id: Int): Response = {
     Order.find(id) match {
-      case None => return JSONResponse("Non existing order", 404)
+      case None => JSONResponse("Non existing order", 404)
       case Some(order) => order.status = "Deliver"
-      return JSONResponse("Ok", 200)
+        JSONResponse("Ok", 200)
     }
   }
 
