@@ -55,7 +55,9 @@ object RestfulAPIServer extends MainRoutes  {
       if (!Location.exists("locationName", locationName)) {
         JSONResponse("Non existing location", 404)
       } else {
-        JSONResponse(Provider.filter(Map("locationName" -> locationName)))
+        JSONResponse(
+          Provider.filter(Map("locationName" ->
+            locationName)).map(provider => provider.toMap))
       }
   }
 
@@ -83,7 +85,8 @@ object RestfulAPIServer extends MainRoutes  {
         Item.all.map(item => item.toMap)
     )
     case providerUsername => JSONResponse(
-      Item.filter(Map("providerUsername" -> providerUsername))
+      Item.filter(Map("providerUsername" ->
+        providerUsername)).map(item => item.toMap)
     )
   }
 
