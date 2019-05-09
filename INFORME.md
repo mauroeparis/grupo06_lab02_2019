@@ -1,7 +1,7 @@
 ## Lab 02 - Applicacion Rapy
 
 En este lab usamos el lenguaje Scala con el framework Cask para diseñar una API
-de deliveries de objetos. En el utilizamos el estilo de arquitectura API REST
+de delivery de objetos. En el utilizamos el estilo de arquitectura API REST
 para establecer el protocolo de comunicación entre los clientes y el servidor.
 
 Al principio nos costó tiempo entender los potenciales de Scala, ya que aunque
@@ -9,15 +9,11 @@ es un lenguaje funcional, nos costó un poco diferenciar entre programacion
 funcional e imperativa y cuando debiamos caer cosas para no caer en malas
 practicas.
 
-<!-- Este parrafo no se si deberia ir así porque es parte de la consigna que
-usemos las cosas funcionales de scala -->
+Además, al ir conociendo el lenguaje fuimos descubriendo funcionalidades como
+`match`, `case class` y `trait` que nos permitieron ampliar nuestro conocimiento
+para poder terminar este proyecto.
 
-Sentimos que muchas de las funciones que hicimos podrían haberse implementado de
-una manera más elegante usando muchas de las funciones muy útiles que tiene
-Scala pero como no tuvimos mucho tiempo para 'jugar' con Scala las hicimos como
-sabíamos que iban a funcionar.
-
-Por ejemplo, dentro de `RestfulAPIServer` quisimos sobrecargar la funcion items
-en el metodo POST para poder realizar las distintas acciones segun la cantidad
-de parametros que se pasen, o si se agrega un parametro `id` por medio del
-`endpoint`.
+Tuvimos algunas dificultades con el manejo de sobrecargas en funciones que
+tomaban parámetros parecidos pero tenían rutas diferentes y Scala no tomaba como
+una sobrecarga a la función y levantaba un error de tipo. Solicionamos esto
+cambiándole el nombre a alguna de las funciones, eliminando así la sobrecarga.
