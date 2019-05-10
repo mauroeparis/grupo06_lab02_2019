@@ -202,7 +202,7 @@ object RestfulAPIServer extends MainRoutes  {
       case None => JSONResponse("Non existing order", 404)
       case Some(order) =>
         if (order.status == "Delivered") {
-          JSONResponse("Order already delivered")
+          JSONResponse("Order already delivered", 400)
         } else {
           order.status = "Delivered"
 
