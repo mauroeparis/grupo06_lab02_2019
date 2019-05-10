@@ -41,7 +41,8 @@ object RestfulAPIServer extends MainRoutes  {
       return JSONResponse("Non existing location", 404)
     }
 
-    val consumer = Consumer(username, locationName)
+    val locationId :Int = Location.filter(Map("name" -> locationName)).head.id
+    val consumer = Consumer(username, locationId)
     consumer.save()
     JSONResponse(consumer.id)
   }
