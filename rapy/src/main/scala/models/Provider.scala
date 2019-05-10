@@ -4,8 +4,8 @@ object Provider extends ModelCompanion[Provider] {
   protected def dbTable: DatabaseTable[Provider] = Database.providers
 
    def apply(username: String, storeName: String, locationId: Int,
-             maxDeliveryDistance: Int): Provider =
-     new Provider(username, storeName, locationId, maxDeliveryDistance)
+             maxDeliveryDistance: Int, balance: Float = 0): Provider =
+     new Provider(username, storeName, locationId, maxDeliveryDistance, balance)
 
    private[models] def apply(jsonValue: JValue): Provider = {
      val value = jsonValue.extract[Provider]
@@ -17,14 +17,20 @@ object Provider extends ModelCompanion[Provider] {
 
 class Provider(val username: String, val storeName: String,
                val locationId: Int,
-               val maxDeliveryDistance: Int) extends Model[Provider] {
+               val maxDeliveryDistance: Int,
+               var balance: Float = 0) extends Model[Provider] {
   protected def dbTable: DatabaseTable[Provider] = Provider.dbTable
 
   override def toMap: Map[String, Any] = super.toMap + (
     "username" -> username, "storeName" -> storeName,
-    "locationId" -> locationId,
-    "maxDeliveryDistance" -> maxDeliveryDistance
+    "locationaId" -> locationId,
+    "maxDeliveryDistance" -> maxDeliveryDistance,
+    "balance" -> balance
   )
 
   override def toString: String = s"Provider: $username"
+
+  def updateBalance(orderCost: Float): Unit = {
+    this.balance = this.balance + orderCost
+  }
 }

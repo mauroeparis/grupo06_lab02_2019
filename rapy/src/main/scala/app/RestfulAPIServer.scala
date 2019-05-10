@@ -86,10 +86,15 @@ object RestfulAPIServer extends MainRoutes  {
     case "" => JSONResponse(
         Item.all.map(item => item.toMap)
     )
-    case providerUsername => JSONResponse(
-      Item.filter(Map("providerUsername" ->
-        providerUsername)).map(item => item.toMap)
-    )
+    case providerUsername =>
+      if (!Provider.exists("username", providerUsername)) {
+        return JSONResponse("Non existing provider", 404)
+      } else {
+        JSONResponse(
+          Item.filter(Map("providerUsername" ->
+            providerUsername)).map(item => item.toMap)
+        )
+      }
   }
 
   @postJson("/api/items")
@@ -196,8 +201,26 @@ object RestfulAPIServer extends MainRoutes  {
   def ordersDeliver(id: Int): Response = {
     Order.find(id) match {
       case None => JSONResponse("Non existing order", 404)
-      case Some(order) => order.status = "Deliver"
-        JSONResponse("Ok", 200)
+      case Some(order) =>
+        if (order.status == "Delivered") {
+          JSONResponse("Order already delivered", 400)
+        } else {
+          order.status = "Delivered"
+
+          Consumer.filter(
+            Map("username" -> order.consumerUsername)
+          ).map(
+            consumer => consumer.updateBalance(order.getTotal)
+          )
+
+          Provider.filter(
+            Map("username" -> order.providerUsername)
+          ).map(
+            provider => provider.updateBalance(order.getTotal)
+          )
+
+          JSONResponse("Ok", 200)
+        }
     }
   }
 
