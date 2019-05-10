@@ -46,4 +46,15 @@ class Order(val providerUsername: String,
   )
 
   override def toString: String = s"Order #$id from $consumerUsername to $providerUsername"
+
+  def getTotal(): Float = {
+    this.items.flatMap(
+      orderItem => Item.filter(
+        Map(
+          "providerUsername" -> this.providerUsername,
+          "name" -> orderItem.name
+        )
+      ).map(item => item.price * orderItem.amount)
+    ).sum
+  }
 }
