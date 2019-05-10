@@ -35,7 +35,7 @@ object RestfulAPIServer extends MainRoutes  {
 
   @postJson("/api/consumers")
   def consumers(username: String, locationName: String): Response = {
-    if (Consumer.exists("username", username)) {
+    if (Consumer.exists("username", username) || Provider.exists("username", username)) {
       return JSONResponse("Existing consumer", 409)
     } else if (!Location.exists("name", locationName)) {
       return JSONResponse("Non existing location", 404)
@@ -64,7 +64,7 @@ object RestfulAPIServer extends MainRoutes  {
   @postJson("/api/providers")
   def providers(username: String, storeName: String, locationName: String,
                 maxDeliveryDistance: Int): Response = {
-    if (Provider.exists("username", username)) {
+    if (Provider.exists("username", username) || Consumer.exists("username", username)) {
       return JSONResponse("Existing username", 409)
     } else if (maxDeliveryDistance < 0) {
       return JSONResponse("Negative maxDeliveryDistance", 400)
@@ -120,6 +120,34 @@ object RestfulAPIServer extends MainRoutes  {
       return JSONResponse("Ok", 200)
     } else {
       return JSONResponse("non existing item", 404)
+    }
+  }
+
+  @post("/api/users/delete/:username")
+  def userDelete(username: String): Response = {
+    if (Provider.exists("username", username)) {
+      Order.filter(Map("providerUsername" -> username)).map(
+        order => Order.delete(order.id)
+      )
+      Item.filter(Map("providerUsername" -> username)).map(
+        item => Item.delete(item.id)
+      )
+      Provider.filter(Map("username" -> username)).map(
+        provider => Provider.delete(provider.id)
+      )
+      return JSONResponse("Ok", 200)
+    } else if (Consumer.exists("username", username)) {
+      Item.filter(Map("providerUsername" -> username)).map(
+        item => Item.delete(item.id)
+      )
+      Consumer.filter(Map("username" -> username)).map(
+        consumer => Consumer.delete(consumer.id)
+      )
+      return JSONResponse("Ok", 200)
+    } else {
+      JSONResponse(
+        "non existing user", 404
+      )
     }
   }
 
