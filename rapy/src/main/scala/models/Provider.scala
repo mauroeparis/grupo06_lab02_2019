@@ -23,7 +23,7 @@ class Provider(val username: String, val storeName: String,
 
   override def toMap: Map[String, Any] = super.toMap + (
     "username" -> username, "storeName" -> storeName,
-    "locationaId" -> locationId,
+    "locationId" -> locationId,
     "maxDeliveryDistance" -> maxDeliveryDistance,
     "balance" -> balance
   )
