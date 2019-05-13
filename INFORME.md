@@ -3,7 +3,7 @@
 ## Decisiones de diseño
 
 En este lab usamos el lenguaje Scala con el framework Cask para diseñar una API
-de delivery de objetos. En el utilizamos el estilo de arquitectura API REST
+de delivery de objetos. En éste utilizamos el estilo de arquitectura API REST
 para establecer el protocolo de comunicación entre los clientes y el servidor.
 
 Al principio tuvimos dificultades para entender los potenciales de Scala ya que,
@@ -22,21 +22,37 @@ cada uno. Este monto lo conseguimos con la función `getTotal` en la clase
 
 ## Puntos estrella
 
-No realizamos puntos estrellas.
+Al entregar un pedido y cambiar su estado a `delivered` este pedido no debe
+poder volver a enviarse ya que si lo hiciera, el ciente estaría pagando más de
+una vez por una misma orden y el proveedor recibiría ese pago por cada nuevo
+`deliver`. Solucionamos esto con un caso de chequeo donde si el estado es
+`deliverd` se devuelve el mensaje `Order already delivered` con el número de
+error 400. Utilizamos el 400 ya que es el que corresponde cuando se obtiene una
+bad request.
 
 ## Lista de conceptos
 
-### - Encapsulamiento
+### Encapsulamiento
 
 Usamos este concepto en `RestfulAPIServer` obteniendo de la interfaz las
 funciones que provee `Model` para brindarles a `Consumer`, `Provider`, `Items`,
 etc, métodos para manipular y manejar sus instancias.
 
-### - Herencia, clases abstractas y traits.
+### Herencia, clases abstractas y traits.
 
-LAS CLASES HEREDAN TODAS DE MODEL.scala !!!
+Un `trait` es una clase abstracta que, en este caso, la utilizamos para sumar
+funcionalidad a las clases que la heredan. Los traits que utilizamos en este
+proyecto son `ModelCompanion` y `Model`.
 
-### - Sobrecarga de operadores
+`ModelCompanion`:
+ - Métodos: `exists`, `delete`, `filter` y `all`.
+ - Clases que heredan de él: `Consumer`, `Provider`, `Item`, `Order` y `Location`.
+
+`Model`:
+ - Métodos: `id`, `toMap`, `dbTable` y `save`.
+ - Clases que heredan de él: `ModelCompanion`.
+
+### Sobrecarga de operadores
 
 Tuvimos algunas dificultades con el manejo de sobrecargas en funciones que
 tomaban parámetros parecidos pero tenían rutas diferentes ya que Scala no tomaba
@@ -48,7 +64,7 @@ recibía un solo argumento pero este era un `Int` y Cask la confundía con el
 `@get("/api/items")` que toma un `providerUsername` que es de tipo `String` y
 daba error por no poder castear este ultimo a `Int`.
 
-### - Polimorfismo
+### Polimorfismo
 
 Utilizamos polimorfismo para implementar la función `exists`. Si esta
 característica no estuviera disponible podríamos haber utilizado sobrecarga o
