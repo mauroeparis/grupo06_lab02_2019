@@ -30,6 +30,9 @@ una vez por una misma orden y el proveedor recibiría ese pago por cada nuevo
 error 400. Utilizamos el 400 ya que es el que corresponde cuando se obtiene una
 bad request.
 
+No agregamos un tag para este punto estrella ya que implementamos
+`ordersDeliver` de esa manera antes de que comentaran por slack que se consideraba como un punto estrella fácil. 
+
 ## Lista de conceptos
 
 ### Encapsulamiento
