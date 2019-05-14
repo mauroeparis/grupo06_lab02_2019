@@ -268,7 +268,9 @@ object RestfulAPIServer extends MainRoutes  {
           orderItem => Item.filter(
             Map(
               "name" -> orderItem.name,
-              "providerUsername" -> order.providerUsername
+              "providerId" -> Provider.filter(
+                Map("username" -> order.providerUsername)
+              ).head.id
             )
           ).map(
             item => item.toMap + ("amount" -> orderItem.amount)
