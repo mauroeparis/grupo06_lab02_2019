@@ -51,7 +51,9 @@ class Order(val providerUsername: String,
     this.items.flatMap(
       orderItem => Item.filter(
         Map(
-          "providerUsername" -> this.providerUsername,
+          "providerId" -> Provider.filter(
+            Map("username" -> this.providerUsername)
+          ).head.id,
           "name" -> orderItem.name
         )
       ).map(item => item.price * orderItem.amount)
