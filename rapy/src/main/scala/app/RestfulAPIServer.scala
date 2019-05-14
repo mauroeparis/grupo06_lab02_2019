@@ -181,22 +181,39 @@ object RestfulAPIServer extends MainRoutes  {
 
     if (!provider.isEmpty) {
       JSONResponse(
-        Order.filter(Map("providerUsername" -> username)).map(order =>
-                                                              order.toMap + (
-                                                                "providerId" -> provider.head.id,
-                                                                "providerStoreName" -> provider.head.storeName
-                                                                "consumerId" -> Consumer.filter(Map("username"-> order.consumerUsername)).head.id
-                                                              )
-                                                            )
+        Order.filter(
+          Map("providerUsername" -> username)
+        ).map(order => order.toMap + (
+            "providerId" -> provider.head.id,
+            "providerStoreName" -> provider.head.storeName,
+            "consumerLocation" -> Location.filter(
+              Map(
+                  "id" -> Consumer.filter(
+                    Map("username"-> order.consumerUsername)
+                  ).head.locationId
+              )
+            ).head.name,
+            "consumerId" -> Consumer.filter(Map("username"-> order.consumerUsername)).head.id,
+            "orderTotal" -> order.getTotal,
+          )
+        )
       )
     } else if (!consumer.isEmpty) {
       JSONResponse(
-        Order.filter(Map("consumerUsername" -> username)).map(order =>
-                                                              order.toMap + (
-                                                                "consumerId" -> consumer.head.id,
-                                                                "providerId" -> Provider.filter(Map("username"-> order.providerUsername)).head.id
-                                                              )
-                                                            )
+        Order.filter(
+          Map("consumerUsername" -> username)
+        ).map(order => order.toMap + (
+            "consumerId" -> consumer.head.id,
+            "providerStoreName" -> Provider.filter(
+              Map("username"-> order.providerUsername)
+            ).head.storeName,
+            "consumerLocation" -> Location.filter(
+              Map("id" -> consumer.head.locationId)
+            ).head.name,
+            "providerId" -> Provider.filter(Map("username"-> order.providerUsername)).head.id,
+            "orderTotal" -> order.getTotal,
+          )
+        )
       )
     } else {
       JSONResponse(
