@@ -161,7 +161,18 @@ object RestfulAPIServer extends MainRoutes  {
   def orders(providerUsername: String,
             consumerUsername: String, items: List[OrderItem]): Response = {
     if (!Provider.exists("username", providerUsername) ||
-        !Consumer.exists("username", consumerUsername)) {
+        !Consumer.exists("username", consumerUsername) ||
+        items.forall(item =>
+          !Item.filter(
+            Map(
+              "name" -> item.name,
+              "providerId" -> Provider.filter(
+                Map("username" -> providerUsername)
+              )
+            )
+          ).isEmpty
+        )
+      ) {
       return JSONResponse(
         "non existing consumer/provider/item for provider", 404)
     } else if (!items.filter(_.amount<0).isEmpty) {
