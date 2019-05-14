@@ -168,7 +168,7 @@ object RestfulAPIServer extends MainRoutes  {
               "name" -> item.name,
               "providerId" -> Provider.filter(
                 Map("username" -> providerUsername)
-              )
+              ).head.id
             )
           ).isEmpty
         )
