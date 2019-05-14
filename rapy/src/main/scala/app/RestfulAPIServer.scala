@@ -36,7 +36,7 @@ object RestfulAPIServer extends MainRoutes  {
   @postJson("/api/consumers")
   def consumers(username: String, locationName: String): Response = {
     if (Consumer.exists("username", username) || Provider.exists("username", username)) {
-      return JSONResponse("Existing consumer", 409)
+      return JSONResponse("Existing username", 409)
     } else if (!Location.exists("name", locationName)) {
       return JSONResponse("Non existing location", 404)
     }
@@ -92,9 +92,10 @@ object RestfulAPIServer extends MainRoutes  {
       if (!Provider.exists("username", providerUsername)) {
         return JSONResponse("Non existing provider", 404)
       } else {
+        val providerId :Int = Provider.filter(Map("username" -> providerUsername)).head.id
         JSONResponse(
-          Item.filter(Map("providerUsername" ->
-            providerUsername)).map(item => item.toMap)
+          Item.filter(Map("providerId" ->
+            providerId)).map(item => item.toMap)
         )
       }
   }
@@ -102,16 +103,18 @@ object RestfulAPIServer extends MainRoutes  {
   @postJson("/api/items")
   def items(name: String, description: String, price: Float,
             providerUsername: String): Response = {
-      if (price < 0) {
-        return JSONResponse("Negative price", 400)
-      } else if (!Provider.exists("username", providerUsername)) {
-        return JSONResponse("Non existing provider", 404)
-      } else if (!(Item.filter(Map("name" -> name,
-                 "providerUsername" ->providerUsername))).isEmpty) {
-        return JSONResponse("Existing item for provider", 409)
-      }
+    val provider : List[Provider] = Provider.filter(Map("username" -> providerUsername))
 
-    val item = Item(name, description, price, providerUsername)
+    if (price < 0) {
+      return JSONResponse("Negative price", 400)
+    } else if (provider.isEmpty) {
+      return JSONResponse("Non existing provider", 404)
+    } else if (!(Item.filter(Map("name" -> name,
+               "providerId" ->provider.head.id))).isEmpty) {
+      return JSONResponse("Existing item for provider", 409)
+    }
+
+    val item = Item(name, description, price, provider.head.id)
     item.save()
     JSONResponse(item.id)
   }
@@ -172,15 +175,45 @@ object RestfulAPIServer extends MainRoutes  {
 
   @get("/api/orders")
   def orders(username: String): Response = {
-    if (Provider.exists("username", username)) {
+    val provider : List[Provider] = Provider.filter(Map("username" -> username))
+    val consumer : List[Consumer] = Consumer.filter(Map("username" -> username))
+
+
+    if (!provider.isEmpty) {
       JSONResponse(
-        Order.filter(Map("providerUsername" -> username)).map(order =>
-                                                              order.toMap)
+        Order.filter(
+          Map("providerUsername" -> username)
+        ).map(order => order.toMap + (
+            "providerId" -> provider.head.id,
+            "providerStoreName" -> provider.head.storeName,
+            "consumerLocation" -> Location.filter(
+              Map(
+                  "id" -> Consumer.filter(
+                    Map("username"-> order.consumerUsername)
+                  ).head.locationId
+              )
+            ).head.name,
+            "consumerId" -> Consumer.filter(Map("username"-> order.consumerUsername)).head.id,
+            "orderTotal" -> order.getTotal,
+          )
+        )
       )
-    } else if (Consumer.exists("username", username)) {
+    } else if (!consumer.isEmpty) {
       JSONResponse(
-        Order.filter(Map("consumerUsername" -> username)).map(order =>
-                                                              order.toMap)
+        Order.filter(
+          Map("consumerUsername" -> username)
+        ).map(order => order.toMap + (
+            "consumerId" -> consumer.head.id,
+            "providerStoreName" -> Provider.filter(
+              Map("username"-> order.providerUsername)
+            ).head.storeName,
+            "consumerLocation" -> Location.filter(
+              Map("id" -> consumer.head.locationId)
+            ).head.name,
+            "providerId" -> Provider.filter(Map("username"-> order.providerUsername)).head.id,
+            "orderTotal" -> order.getTotal,
+          )
+        )
       )
     } else {
       JSONResponse(
