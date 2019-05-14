@@ -273,7 +273,7 @@ object RestfulAPIServer extends MainRoutes  {
               ).head.id
             )
           ).map(
-            item => item.toMap + ("amount" -> orderItem.amount)
+            item => item.toMap - "id" + ("id" -> order.id, "amount" -> orderItem.amount) - "providerId"
           )
         )
       )
