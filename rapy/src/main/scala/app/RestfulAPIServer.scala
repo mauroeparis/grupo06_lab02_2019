@@ -175,15 +175,28 @@ object RestfulAPIServer extends MainRoutes  {
 
   @get("/api/orders")
   def orders(username: String): Response = {
-    if (Provider.exists("username", username)) {
+    val provider : List[Provider] = Provider.filter(Map("username" -> username))
+    val consumer : List[Consumer] = Consumer.filter(Map("username" -> username))
+
+
+    if (!provider.isEmpty) {
       JSONResponse(
         Order.filter(Map("providerUsername" -> username)).map(order =>
-                                                              order.toMap)
+                                                              order.toMap + (
+                                                                "providerId" -> provider.head.id,
+                                                                "providerStoreName" -> provider.head.storeName
+                                                                "consumerId" -> Consumer.filter(Map("username"-> order.consumerUsername)).head.id
+                                                              )
+                                                            )
       )
-    } else if (Consumer.exists("username", username)) {
+    } else if (!consumer.isEmpty) {
       JSONResponse(
         Order.filter(Map("consumerUsername" -> username)).map(order =>
-                                                              order.toMap)
+                                                              order.toMap + (
+                                                                "consumerId" -> consumer.head.id,
+                                                                "providerId" -> Provider.filter(Map("username"-> order.providerUsername)).head.id
+                                                              )
+                                                            )
       )
     } else {
       JSONResponse(
