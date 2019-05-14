@@ -163,7 +163,7 @@ object RestfulAPIServer extends MainRoutes  {
     if (!Provider.exists("username", providerUsername) ||
         !Consumer.exists("username", consumerUsername) ||
         items.forall(item =>
-          !Item.filter(
+          Item.filter(
             Map(
               "name" -> item.name,
               "providerId" -> Provider.filter(
